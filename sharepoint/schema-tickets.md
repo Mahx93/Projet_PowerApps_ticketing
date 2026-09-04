@@ -4,7 +4,7 @@ Backend commun de l'app Power Apps (Code App) et de l'agent Copilot Studio.
 Pas de Dataverse (licence non disponible ce batch).
 
 **Site SharePoint :** https://alegriaacademy23.sharepoint.com/sites/HelpDeskBatch18Maxime
-**Liste :** Tickets (privé)
+**Liste :** Tickets_ProjetFinal (privé)
 
 | Colonne              | Type   | Détail                                                    |
 |-----------------------|--------|------------------------------------------------------------|
