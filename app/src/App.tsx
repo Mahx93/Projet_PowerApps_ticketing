@@ -1,122 +1,122 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import { getContext } from '@microsoft/power-apps/app';
+import type { Ticket, TicketDraft } from './lib/ticketFields';
+import { createTicket, listTickets, updateTicket } from './lib/ticketsApi';
+import type { TicketUpdate } from './lib/ticketsApi';
+import { TicketList } from './components/TicketList';
+import { TicketFormModal } from './components/TicketFormModal';
+import { TicketDetailModal } from './components/TicketDetailModal';
+import './App.css';
+
+type ViewMode = 'mine' | 'all';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [viewMode, setViewMode] = useState<ViewMode>('mine');
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+
+  async function refreshTickets() {
+    setLoading(true);
+    setLoadError('');
+    try {
+      const data = await listTickets();
+      setTickets(data);
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : 'Impossible de charger les tickets.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    getContext()
+      .then((ctx) => {
+        setUserName(ctx.user.fullName ?? '');
+        setUserEmail(ctx.user.userPrincipalName ?? '');
+      })
+      .catch(() => {
+        // Contexte utilisateur indisponible (ex: exécution locale hors Teams) : pas bloquant.
+      });
+    refreshTickets();
+  }, []);
+
+  async function handleCreate(draft: TicketDraft) {
+    await createTicket(draft);
+    setShowCreateForm(false);
+    await refreshTickets();
+  }
+
+  async function handleUpdate(id: string, update: TicketUpdate) {
+    await updateTicket(id, update);
+    await refreshTickets();
+  }
+
+  const visibleTickets =
+    viewMode === 'mine' && userEmail
+      ? tickets.filter((t) => t.emailDemandeur.toLowerCase() === userEmail.toLowerCase())
+      : tickets;
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
+    <div className="app-shell">
+      <header className="app-header">
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
+          <h1>HelpDesk Ticketing</h1>
+          <p className="app-subtitle">{userName ? `Connecté(e) en tant que ${userName}` : 'Support IT / RH'}</p>
         </div>
+        <button type="button" className="btn btn-primary" onClick={() => setShowCreateForm(true)}>
+          + Nouveau ticket
+        </button>
+      </header>
+
+      <nav className="view-tabs">
         <button
           type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+          className={viewMode === 'mine' ? 'tab tab-active' : 'tab'}
+          onClick={() => setViewMode('mine')}
         >
-          Count is {count}
+          Mes tickets
         </button>
-      </section>
+        <button
+          type="button"
+          className={viewMode === 'all' ? 'tab tab-active' : 'tab'}
+          onClick={() => setViewMode('all')}
+        >
+          Tous les tickets (gestionnaire)
+        </button>
+      </nav>
 
-      <div className="ticks"></div>
+      <main className="app-main">
+        {loading && <p>Chargement des tickets…</p>}
+        {loadError && <p className="form-error">{loadError}</p>}
+        {!loading && !loadError && (
+          <TicketList tickets={visibleTickets} onSelect={setSelectedTicket} />
+        )}
+      </main>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {showCreateForm && (
+        <TicketFormModal
+          defaultDemandeur={userName}
+          defaultEmail={userEmail}
+          onClose={() => setShowCreateForm(false)}
+          onCreate={handleCreate}
+        />
+      )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {selectedTicket && (
+        <TicketDetailModal
+          ticket={selectedTicket}
+          isGestionnaire={viewMode === 'all'}
+          onClose={() => setSelectedTicket(null)}
+          onUpdate={handleUpdate}
+        />
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
