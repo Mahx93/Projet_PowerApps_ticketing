@@ -5,9 +5,12 @@ import type {
 } from '../generated/models/Tickets_ProjetFinalModel';
 import type { Ticket, TicketDraft } from './ticketFields';
 
-// La connexion SharePoint (connecteur shared_sharepointonline) renvoie les
-// colonnes Choix sous forme d'objet { Value, Id, @odata.type }. On lit
-// simplement .Value ; à l'écriture, le connecteur accepte { Value } seul.
+// La connexion SharePoint (connecteur shared_sharepointonline) modélise les
+// colonnes Choix comme des tableaux ({ Value }[]), avec une propriété sœur
+// "<field>@odata.type" = "#Collection(Edm.String)" à l'écriture. Le SDK généré
+// (Tickets_ProjetFinalModel) types ces champs comme un objet simple, ce qui
+// est trompeur : c'est bien un tableau côté API réelle (confirmé par échec
+// en écriture avec un objet seul, et par le schéma OpenAPI du connecteur).
 function readChoice(value: unknown): string {
   if (!value) return '';
   if (Array.isArray(value)) {
@@ -17,8 +20,11 @@ function readChoice(value: unknown): string {
   return (value as { Value?: string }).Value ?? '';
 }
 
-function writeChoice(value: string): unknown {
-  return { Value: value };
+function choiceFields(field: 'field_2' | 'field_3' | 'field_4', value: string): Record<string, unknown> {
+  return {
+    [field]: [{ Value: value }],
+    [`${field}@odata.type`]: '#Collection(Edm.String)',
+  };
 }
 
 function fromRecord(record: Tickets_ProjetFinalRead): Ticket {
@@ -48,17 +54,17 @@ export async function listTickets(): Promise<Ticket[]> {
 
 export async function createTicket(draft: TicketDraft): Promise<Ticket> {
   const now = new Date().toISOString();
-  const payload: Omit<Tickets_ProjetFinalWrite, 'ID'> = {
+  const payload = {
     Title: draft.titre,
     field_1: draft.description,
-    field_2: writeChoice(draft.categorie) as Tickets_ProjetFinalWrite['field_2'],
-    field_3: writeChoice(draft.priorite) as Tickets_ProjetFinalWrite['field_3'],
-    field_4: writeChoice('Ouvert') as Tickets_ProjetFinalWrite['field_4'],
+    ...choiceFields('field_2', draft.categorie),
+    ...choiceFields('field_3', draft.priorite),
+    ...choiceFields('field_4', 'Ouvert'),
     field_5: draft.demandeur,
     field_6: draft.emailDemandeur,
     field_8: now,
     field_9: draft.dateEcheance ? new Date(draft.dateEcheance).toISOString() : undefined,
-  };
+  } as unknown as Omit<Tickets_ProjetFinalWrite, 'ID'>;
   const result = await Tickets_ProjetFinalService.create(payload);
   if (!result.data) {
     throw new Error('La création du ticket a échoué.');
@@ -76,9 +82,9 @@ export interface TicketUpdate {
 type Statut = Ticket['statut'];
 
 export async function updateTicket(id: string, update: TicketUpdate): Promise<Ticket> {
-  const payload: Partial<Omit<Tickets_ProjetFinalWrite, 'ID'>> = {};
+  const payload: Record<string, unknown> = {};
   if (update.statut) {
-    payload.field_4 = writeChoice(update.statut) as Tickets_ProjetFinalWrite['field_4'];
+    Object.assign(payload, choiceFields('field_4', update.statut));
   }
   if (update.gestionnaire !== undefined) {
     payload.field_7 = update.gestionnaire;
@@ -89,7 +95,7 @@ export async function updateTicket(id: string, update: TicketUpdate): Promise<Ti
   if (update.dateResolution !== undefined) {
     payload.field_10 = update.dateResolution ? new Date(update.dateResolution).toISOString() : undefined;
   }
-  const result = await Tickets_ProjetFinalService.update(id, payload);
+  const result = await Tickets_ProjetFinalService.update(id, payload as Partial<Omit<Tickets_ProjetFinalWrite, 'ID'>>);
   if (!result.data) {
     throw new Error('La mise à jour du ticket a échoué.');
   }
