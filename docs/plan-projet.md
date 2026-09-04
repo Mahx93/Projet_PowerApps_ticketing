@@ -15,9 +15,9 @@ Légende : ⬜ à faire · 🔶 en cours · ✅ fait
   - ✅ Connexion source de données SharePoint (`pac code add-data-source`, liste Tickets_ProjetFinal reliée via son ID interne)
   - ✅ Composants (liste & suivi des tickets, vue demandeur vs gestionnaire, création/édition) — build + lint validés
   - ✅ Test en conditions réelles validé (`pac code run` + `npm run dev` sur port 3000, via l'URL "play" Power Apps, données SharePoint live)
-- 🔶 J3 Power Automate & Sécurité
+- ✅ J3 Power Automate & Sécurité
   - ✅ Flow "Notifier création ticket" : déclencheur SharePoint "Lorsqu'un élément est créé" (Tickets_ProjetFinal) → Office 365 Outlook "Envoyer un e-mail (V2)" — testé de bout en bout (création ticket → email reçu)
-  - ⬜ Sécurité à la ligne sur la liste SharePoint (un demandeur ne doit voir que ses propres tickets au niveau des permissions, pas seulement filtré côté UI)
+  - ✅ Sécurité à la ligne : rupture d'héritage + octroi d'accès nominatif (demandeur + support) sur chaque nouvel item, dans le même flow — testé, toutes les étapes en succès
 - ⬜ J4 Déploiement : push de l'app, environnements dev → test (pas de prod ce batch), migration des objets
 
 ## Notes techniques importantes
