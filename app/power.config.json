@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "appId": null,
+  "appDisplayName": "HelpDesk Ticketing",
+  "region": "prod",
+  "environmentId": "45e88849-549a-ed59-8a14-eac0b2496cfd",
+  "description": " ",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "localAppUrl": "http://localhost:3000",
+  "logoPath": "Default",
+  "connectionReferences": {
+    "ae6782da-9486-4036-9c74-0593c5924dd1": {
+      "id": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+      "displayName": "SharePoint",
+      "dataSources": [
+        "tickets_projetfinal"
+      ],
+      "dataSets": {
+        "https://alegriaacademy23.sharepoint.com/sites/HelpDeskBatch18Maxime": {
+          "dataSources": {
+            "tickets_projetfinal": {
+              "tableName": "e01a76ec-0c90-47e3-8f26-f6ee673c873e"
+            }
+          }
+        }
+      }
+    }
+  },
+  "databaseReferences": {}
+}
