@@ -14,7 +14,7 @@ Légende : ⬜ à faire · 🔶 en cours · ✅ fait
 - 🔶 J2 Dev & Structuration
   - ✅ Connexion source de données SharePoint (`pac code add-data-source`, liste Tickets_ProjetFinal reliée via son ID interne)
   - ✅ Composants (liste & suivi des tickets, vue demandeur vs gestionnaire, création/édition) — build + lint validés
-  - ⬜ Test en conditions réelles (`npx power-apps run` sur le PC, données SharePoint live), débogage console
+  - ✅ Test en conditions réelles validé (`pac code run` + `npm run dev` sur port 3000, via l'URL "play" Power Apps, données SharePoint live)
 - ⬜ J3 Power Automate & Sécurité : flow appelé depuis la CodeApp, sécurité à la ligne SharePoint vs Dataverse
 - ⬜ J4 Déploiement : push de l'app, environnements dev → test (pas de prod ce batch), migration des objets
 
