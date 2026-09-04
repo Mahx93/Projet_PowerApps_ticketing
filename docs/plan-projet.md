@@ -13,7 +13,8 @@ Légende : ⬜ à faire · 🔶 en cours · ✅ fait
 - ✅ J1 Environnement & Init : `pac auth create` (device code, PC perso), env sélectionné "DevZone Batch - 18&19", `pac code init` scaffold Vite/React/TS + `npm install`
 - 🔶 J2 Dev & Structuration
   - ✅ Connexion source de données SharePoint (`pac code add-data-source`, liste Tickets_ProjetFinal reliée via son ID interne)
-  - ⬜ Composants (liste & suivi des tickets, vue demandeur vs gestionnaire), bonnes pratiques, débogage console
+  - ✅ Composants (liste & suivi des tickets, vue demandeur vs gestionnaire, création/édition) — build + lint validés
+  - ⬜ Test en conditions réelles (`npx power-apps run` sur le PC, données SharePoint live), débogage console
 - ⬜ J3 Power Automate & Sécurité : flow appelé depuis la CodeApp, sécurité à la ligne SharePoint vs Dataverse
 - ⬜ J4 Déploiement : push de l'app, environnements dev → test (pas de prod ce batch), migration des objets
 
