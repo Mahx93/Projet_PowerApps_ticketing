@@ -20,7 +20,7 @@ Légende : ⬜ à faire · 🔶 en cours · ✅ fait
   - ✅ Sécurité à la ligne : rupture d'héritage + octroi d'accès nominatif (demandeur + support) sur chaque nouvel item, dans le même flow — testé, toutes les étapes en succès
 - 🔶 J4 Déploiement
   - ✅ `pac code push --solutionName Maxime_G` — app "HelpDesk Ticketing" visible dans la solution, rattachée pour de bon (avant ça, rien n'était persisté côté plateforme, seulement en local via `pac code run`)
-  - ⬜ Migration dev → test (export/import de la solution)
+  - ⬜ Migration dev → test : à faire à la prochaine session. Un seul environnement disponible pour l'instant (`DevZone Batch - 18&19`) ; à vérifier si Maxime a les droits de créer un environnement de test (admin.powerplatform.microsoft.com → Environnements → Nouveau). Sinon, plan B : exporter la solution `Maxime_G` (zip) sans forcément l'importer, pour démontrer la mécanique attendue par le brief à l'oral.
 
 ## Notes techniques importantes
 - **`pac code` (Code Apps) ne fonctionne pas depuis l'environnement cloud Claude** : l'API `environment.api.powerplatform.com` semble bloquer les IP de datacenter. Toutes les commandes `pac code` (init, add-data-source, run, push) doivent s'exécuter sur le PC perso de Maxime (via VS Code + extension Power Platform Tools). Le reste (auth, env, solution, docs, code applicatif) se fait depuis l'interface Claude.
