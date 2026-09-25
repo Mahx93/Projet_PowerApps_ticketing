@@ -32,10 +32,14 @@ de mise en conformité, suivie ici :
      modifié" + action "Obtenir les modifications (propriétés uniquement)"
      pour détecter que Statut a changé précisément (pas n'importe quel champ)
    - Flow "Relancer tickets critiques" : flow programmé (récurrence 30 min),
-     filtre OData côté "Obtenir les éléments" (`field_3/Value eq 'Critique'
-     and field_4/Value eq 'Nouveau' and field_8 le '@{addHours(utcNow(), -1)}'`,
-     accesseur `/Value` nécessaire pour les champs Choix), puis Appliquer à
-     chacun → email de relance
+     filtre OData côté "Obtenir les éléments" limité à la date
+     (`field_8 le datetime'@{formatDateTime(addHours(utcNow(), -1),
+     'yyyy-MM-ddTHH:mm:ssZ')}'` — les colonnes Priorité/Statut sont en
+     "Autoriser plusieurs sélections" côté SharePoint, donc illisibles en
+     `$filter` quelle que soit la syntaxe, cf. note technique ci-dessous),
+     puis Condition dans "Appliquer à chacun" (`item()?['field_3']?[0]?['Value']
+     eq 'Critique'` ET `item()?['field_4']?[0]?['Value'] eq 'Nouveau'`) →
+     email de relance — testé en conditions réelles, fonctionnel
 4. ✅ **Tri de la file agent** (colonnes cliquables Priorité/Statut/Agent
    assigné, ordre logique pas alphabétique) + nouvelle page Dashboard pour le
    rôle Responsable (tickets ouverts, critiques en retard, résolus 7 jours,
@@ -62,7 +66,7 @@ DEV → import dans prod-rse → reconnecter la connexion SharePoint).
   - ✅ Sécurité à la ligne : rupture d'héritage + octroi d'accès nominatif (demandeur + support) sur chaque nouvel item, dans le même flow — testé, toutes les étapes en succès
 - 🔶 J4 Déploiement
   - ✅ `pac code push --solutionName Maxime_G` — app "HelpDesk Ticketing" visible dans la solution, rattachée pour de bon
-  - ⬜ Migration dev → test/prod : un seul environnement disponible pour l'instant (`DevZone Batch - 18&19`) ; à vérifier si Maxime a les droits de créer un environnement supplémentaire (admin.powerplatform.microsoft.com → Environnements → Nouveau). Le nouveau cahier demande explicitement un déploiement **en production** en séance 8 (contrairement à l'ancienne version).
+  - ⬜ Migration dev → prod : environnement **prod-rse** créé par l'admin, prêt à l'emploi — reste à exporter la solution "Maxime_G" en Géré depuis DEV, l'importer dans prod-rse, et reconnecter la référence de connexion SharePoint (voir note en tête de document). Le nouveau cahier demande explicitement un déploiement **en production** en séance 8 (contrairement à l'ancienne version).
 
 ## Notes techniques importantes
 - **Copilot Studio — crédits épuisés, définitif** : le panneau de test de l'agent renvoie `Error code: EnforcementUsageCredits` ("This environment is out of credits"). Confirmé non résolvable (pas de recharge prévue pour ce tenant de formation). L'agent est construit et documenté mais son comportement conversationnel ne peut pas être vérifié en conditions réelles — à assumer clairement dans la vidéo plutôt que de le cacher.
@@ -70,6 +74,7 @@ DEV → import dans prod-rse → reconnecter la connexion SharePoint).
 - **Microsoft Lists ≠ SharePoint site** : une liste créée depuis lists.microsoft.com sans choisir explicitement le site cible reste orpheline (n'apparaît pas dans le site ni dans les connecteurs). Toujours créer les listes depuis "Contenu du site" du site SharePoint cible.
 - **`pac code add-data-source --table`** attend l'ID interne de la liste (GUID, obtenu via `pac code list-tables`), pas son nom affiché.
 - **Champs Choix SharePoint (Catégorie/Priorité/Statut) en écriture** : le SDK généré (`Tickets_ProjetFinalModel.ts`) type ces champs comme un objet simple, mais l'API réelle attend un tableau (`field_2: [{ Value: "IT" }]`) + une propriété sœur `field_2@odata.type: "#Collection(Edm.String)"`. Confirmé par un échec HTTP 400 en test réel. Voir `src/services/ticketsApi.ts`.
+- **Champs Choix multi-sélection (Catégorie/Priorité/Statut) illisibles en `$filter`** : ces 3 colonnes ont été créées avec "Autoriser plusieurs sélections" côté SharePoint (d'où le tableau en écriture ci-dessus), contrairement à Canal d'origine (sélection simple). L'action "Obtenir les éléments" ne supporte **aucune** syntaxe de filtre OData sur une colonne Choix multi-sélection (`/Value`, `/any(x: x/Value eq …)` échouent tous les deux avec 400 "La requête est incorrecte"). Contournement systématique : filtrer uniquement sur les champs non-Choix dans `$filter` (dates, texte), puis vérifier les champs Choix via une Condition dans "Appliquer à chacun" avec `item()?['field_X']?[0]?['Value']`. Ne pas perdre de temps à re-tester des variantes de syntaxe `$filter` sur ces colonnes — cf. flow "Relancer tickets critiques".
 - **Connecteur "Mail" (`shared_sendmail`) vs "Office 365 Outlook"** : dans le sélecteur d'actions Power Automate, les deux proposent une action "Envoyer un e-mail" au nom quasi identique. Le connecteur générique "Mail" est actuellement bridé par Microsoft pour les nouveaux tenants (HTTP 401 "restricted for new tenants") — toujours choisir explicitement **Office 365 Outlook**.
 - **Licence Power Apps manquante sur ce tenant de formation** : lancer l'app déployée via le lecteur officiel (make.powerapps.com / lien "play" de production) déclenche une demande d'essai Power Apps ("plan insuffisant"). Le mode local (`pac code run` + URL "play" avec `_localAppUrl`) n'est pas soumis à cette contrainte et fonctionne normalement — c'est ce mode qui sert de démo fonctionnelle pour la vidéo tant que la licence n'est pas résolue côté tenant. À re-vérifier vu l'exigence de prod du nouveau cahier.
 - **Structure du code (25/09)** : réorganisé en `components/` (Badges, TicketList, TicketFormModal, TicketDetailModal), `pages/` (AgentQueuePage), `services/` (ticketFields, ticketsApi — ex-`lib/`). La Code App ne gère plus que le côté agent support ; la vue "Mes tickets" (demandeur) a été retirée, ce suivi passera par l'agent Copilot Studio.
