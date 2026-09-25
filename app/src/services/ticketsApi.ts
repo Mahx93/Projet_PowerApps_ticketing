@@ -37,7 +37,11 @@ function fromRecord(record: Tickets_ProjetFinalRead): Ticket {
     statut: readChoice(record.field_4) as Ticket['statut'],
     demandeur: record.field_5 ?? '',
     emailDemandeur: record.field_6 ?? '',
-    gestionnaire: record.field_7 ?? '',
+    agentAssigne: record.field_7 ?? '',
+    // TODO : colonne "Canal d'origine" pas encore créée dans SharePoint.
+    // Une fois ajoutée (cf. sharepoint/schema-tickets.md) et rechargée via
+    // `pac code add-data-source`, mapper ici le nouveau field_N généré.
+    canalOrigine: '',
     dateCreation: record.field_8 ?? '',
     dateEcheance: record.field_9 ?? '',
     dateResolution: record.field_10 ?? '',
@@ -59,11 +63,12 @@ export async function createTicket(draft: TicketDraft): Promise<Ticket> {
     field_1: draft.description,
     ...choiceFields('field_2', draft.categorie),
     ...choiceFields('field_3', draft.priorite),
-    ...choiceFields('field_4', 'Ouvert'),
+    ...choiceFields('field_4', 'Nouveau'),
     field_5: draft.demandeur,
     field_6: draft.emailDemandeur,
     field_8: now,
     field_9: draft.dateEcheance ? new Date(draft.dateEcheance).toISOString() : undefined,
+    // draft.canalOrigine pas encore envoyé : colonne SharePoint à créer (cf. TODO fromRecord).
   } as unknown as Omit<Tickets_ProjetFinalWrite, 'ID'>;
   const result = await Tickets_ProjetFinalService.create(payload);
   if (!result.data) {
@@ -74,7 +79,7 @@ export async function createTicket(draft: TicketDraft): Promise<Ticket> {
 
 export interface TicketUpdate {
   statut?: Statut;
-  gestionnaire?: string;
+  agentAssigne?: string;
   commentaire?: string;
   dateResolution?: string;
 }
@@ -86,8 +91,8 @@ export async function updateTicket(id: string, update: TicketUpdate): Promise<Ti
   if (update.statut) {
     Object.assign(payload, choiceFields('field_4', update.statut));
   }
-  if (update.gestionnaire !== undefined) {
-    payload.field_7 = update.gestionnaire;
+  if (update.agentAssigne !== undefined) {
+    payload.field_7 = update.agentAssigne;
   }
   if (update.commentaire !== undefined) {
     payload.field_11 = update.commentaire;

@@ -144,8 +144,9 @@
 .badge-normale { background: #e0e7ff; color: #4338ca; }
 .badge-basse { background: #f1f5f9; color: #475569; }
 
-.badge-ouvert { background: #dbeafe; color: #1d4ed8; }
+.badge-nouveau { background: #dbeafe; color: #1d4ed8; }
 .badge-encours { background: #fef9c3; color: #a16207; }
+.badge-attente { background: #fce7f3; color: #a21caf; }
 .badge-resolu { background: #dcfce7; color: #15803d; }
 .badge-ferme { background: #e5e7eb; color: #374151; }
 
@@ -168,6 +169,12 @@
   width: 100%;
   max-width: 480px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-hint {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 6px;
 }
 
 .modal form,

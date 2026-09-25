@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CATEGORIES, PRIORITIES } from '../services/ticketFields';
+import { CANAUX_ORIGINE, CATEGORIES, PRIORITIES } from '../services/ticketFields';
 import type { TicketDraft } from '../services/ticketFields';
 
 export function TicketFormModal({
@@ -19,6 +19,7 @@ export function TicketFormModal({
   const [priorite, setPriorite] = useState<TicketDraft['priorite']>('Normale');
   const [demandeur, setDemandeur] = useState(defaultDemandeur);
   const [emailDemandeur, setEmailDemandeur] = useState(defaultEmail);
+  const [canalOrigine, setCanalOrigine] = useState<TicketDraft['canalOrigine']>('Téléphone');
   const [dateEcheance, setDateEcheance] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -32,7 +33,7 @@ export function TicketFormModal({
     setSubmitting(true);
     setError('');
     try {
-      await onCreate({ titre, description, categorie, priorite, demandeur, emailDemandeur, dateEcheance });
+      await onCreate({ titre, description, categorie, priorite, demandeur, emailDemandeur, dateEcheance, canalOrigine });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur inconnue.');
       setSubmitting(false);
@@ -42,7 +43,8 @@ export function TicketFormModal({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2>Nouveau ticket</h2>
+        <h2>Enregistrer un ticket</h2>
+        <p className="modal-hint">Pour une demande reçue par téléphone, email ou en direct — les demandes via Teams passent par l'agent conversationnel.</p>
         <form onSubmit={handleSubmit}>
           <label>
             Titre
@@ -80,10 +82,20 @@ export function TicketFormModal({
               <input type="email" value={emailDemandeur} onChange={(e) => setEmailDemandeur(e.target.value)} />
             </label>
           </div>
-          <label>
-            Date d'échéance souhaitée
-            <input type="date" value={dateEcheance} onChange={(e) => setDateEcheance(e.target.value)} />
-          </label>
+          <div className="form-row">
+            <label>
+              Canal d'origine
+              <select value={canalOrigine} onChange={(e) => setCanalOrigine(e.target.value as TicketDraft['canalOrigine'])}>
+                {CANAUX_ORIGINE.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Date d'échéance souhaitée
+              <input type="date" value={dateEcheance} onChange={(e) => setDateEcheance(e.target.value)} />
+            </label>
+          </div>
 
           {error && <p className="form-error">{error}</p>}
 

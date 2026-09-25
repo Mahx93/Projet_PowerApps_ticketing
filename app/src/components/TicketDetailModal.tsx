@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { STATUSES } from '../services/ticketFields';
+import { STATUSES, STATUSES_REQUIRING_COMMENT } from '../services/ticketFields';
 import type { Ticket } from '../services/ticketFields';
 import type { TicketUpdate } from '../services/ticketsApi';
 import { PriorityBadge, StatusBadge } from './Badges';
@@ -16,17 +16,23 @@ export function TicketDetailModal({
   onUpdate: (id: string, update: TicketUpdate) => Promise<void>;
 }) {
   const [statut, setStatut] = useState(ticket.statut);
-  const [gestionnaire, setGestionnaire] = useState(ticket.gestionnaire || defaultAgent);
+  const [agentAssigne, setAgentAssigne] = useState(ticket.agentAssigne || defaultAgent);
   const [commentaire, setCommentaire] = useState(ticket.commentaire);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  const commentRequired = statut !== '' && STATUSES_REQUIRING_COMMENT.includes(statut);
+
   async function handleSave() {
+    if (commentRequired && !commentaire.trim()) {
+      setError('Un commentaire de résolution est obligatoire pour ce statut.');
+      return;
+    }
     setSubmitting(true);
     setError('');
     try {
-      const update: TicketUpdate = { statut, gestionnaire, commentaire };
-      if (statut === 'Résolu' || statut === 'Fermé') {
+      const update: TicketUpdate = { statut, agentAssigne, commentaire };
+      if (statut === 'Résolu' || statut === 'Clôturé') {
         update.dateResolution = ticket.dateResolution || new Date().toISOString();
       }
       await onUpdate(ticket.id, update);
@@ -65,11 +71,11 @@ export function TicketDetailModal({
             </label>
             <label>
               Agent assigné
-              <input value={gestionnaire} onChange={(e) => setGestionnaire(e.target.value)} />
+              <input value={agentAssigne} onChange={(e) => setAgentAssigne(e.target.value)} />
             </label>
           </div>
           <label>
-            Commentaire de suivi
+            Commentaire de résolution{commentRequired ? ' (obligatoire)' : ''}
             <textarea value={commentaire} onChange={(e) => setCommentaire(e.target.value)} rows={3} />
           </label>
           {error && <p className="form-error">{error}</p>}

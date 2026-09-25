@@ -28,6 +28,7 @@ export function TicketList({
           <th>Priorité</th>
           <th>Statut</th>
           <th>Demandeur</th>
+          <th>Agent assigné</th>
           <th>Créé le</th>
           <th>Échéance</th>
         </tr>
@@ -44,6 +45,7 @@ export function TicketList({
               <StatusBadge value={ticket.statut} />
             </td>
             <td>{ticket.demandeur}</td>
+            <td>{ticket.agentAssigne || '—'}</td>
             <td>{formatDate(ticket.dateCreation)}</td>
             <td>{formatDate(ticket.dateEcheance)}</td>
           </tr>

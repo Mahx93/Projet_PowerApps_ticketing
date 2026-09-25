@@ -9,8 +9,15 @@ export type Categorie = (typeof CATEGORIES)[number];
 export const PRIORITIES = ['Basse', 'Normale', 'Haute', 'Critique'] as const;
 export type Priorite = (typeof PRIORITIES)[number];
 
-export const STATUSES = ['Ouvert', 'En cours', 'Résolu', 'Fermé'] as const;
+export const STATUSES = ['Nouveau', 'En cours', 'En attente demandeur', 'Résolu', 'Clôturé'] as const;
 export type Statut = (typeof STATUSES)[number];
+
+// Statuts qui exigent un commentaire de résolution avant de pouvoir enregistrer
+// (cahier des charges : "un commentaire de résolution, obligatoire pour fermer un ticket").
+export const STATUSES_REQUIRING_COMMENT: readonly Statut[] = ['Résolu', 'Clôturé'];
+
+export const CANAUX_ORIGINE = ['Application', 'Teams', 'Téléphone', 'Email'] as const;
+export type CanalOrigine = (typeof CANAUX_ORIGINE)[number];
 
 export interface Ticket {
   id: string;
@@ -21,7 +28,8 @@ export interface Ticket {
   statut: Statut | '';
   demandeur: string;
   emailDemandeur: string;
-  gestionnaire: string;
+  agentAssigne: string;
+  canalOrigine: CanalOrigine | '';
   dateCreation: string;
   dateEcheance: string;
   dateResolution: string;
@@ -36,4 +44,5 @@ export interface TicketDraft {
   demandeur: string;
   emailDemandeur: string;
   dateEcheance: string;
+  canalOrigine: CanalOrigine;
 }

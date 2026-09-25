@@ -8,10 +8,11 @@ const PRIORITY_CLASS: Record<string, string> = {
 };
 
 const STATUS_CLASS: Record<string, string> = {
-  Ouvert: 'badge badge-ouvert',
+  Nouveau: 'badge badge-nouveau',
   'En cours': 'badge badge-encours',
+  'En attente demandeur': 'badge badge-attente',
   Résolu: 'badge badge-resolu',
-  Fermé: 'badge badge-ferme',
+  Clôturé: 'badge badge-ferme',
 };
 
 export function PriorityBadge({ value }: { value: Priorite | '' }) {
