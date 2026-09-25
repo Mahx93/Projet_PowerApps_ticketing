@@ -41,8 +41,15 @@ de mise en conformité, suivie ici :
    rôle Responsable (tickets ouverts, critiques en retard, résolus 7 jours,
    délai moyen, répartition par statut, charge par agent) — code only, à
    tester sur le PC
-5. ⬜ **Déploiement en production** (à re-vérifier : droits sur un
-   environnement supplémentaire, cf. note J4 ci-dessous)
+Les 4 écarts Power Apps/Power Automate ci-dessus sont réglés. **Le
+déploiement en production est repoussé après la Phase 2 (Copilot Studio)** :
+la solution finale à livrer réunit l'app + les flows + l'agent (cahier des
+charges), donc un seul déploiement propre à la toute fin plutôt que deux (un
+maintenant, un après l'agent). Ça correspond aussi à l'ordre du nouveau
+cahier (Séance 8 = déploiement, après les Séances 6-7 = Copilot Studio).
+Environnement de prod déjà prêt : **prod-rse**, créé par l'admin — reste
+juste à l'utiliser le moment venu (export solution "Maxime_G" en Géré depuis
+DEV → import dans prod-rse → reconnecter la connexion SharePoint).
 
 ## Phase 1 — Power Apps & Power Automate (historique, batch 18&19)
 - ✅ J1 Environnement & Init : `pac auth create` (device code, PC perso), env sélectionné "DevZone Batch - 18&19", `pac code init` scaffold Vite/React/TS + `npm install`
