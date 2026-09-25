@@ -7,10 +7,11 @@ import type { Ticket, TicketDraft } from './ticketFields';
 
 // La connexion SharePoint (connecteur shared_sharepointonline) modélise les
 // colonnes Choix comme des tableaux ({ Value }[]), avec une propriété sœur
-// "<field>@odata.type" = "#Collection(Edm.String)" à l'écriture. Le SDK généré
-// (Tickets_ProjetFinalModel) types ces champs comme un objet simple, ce qui
-// est trompeur : c'est bien un tableau côté API réelle (confirmé par échec
-// en écriture avec un objet seul, et par le schéma OpenAPI du connecteur).
+// "<field>@odata.type" = "#Collection(Edm.String)" à l'écriture — quel que
+// soit ce que le SDK généré (Tickets_ProjetFinalModel) déclare pour ce champ
+// (objet simple pour Catégorie/Priorité/Statut, texte simple pour
+// Canaldorigine à sa création) : les deux se sont révélés trompeurs à
+// l'usage, confirmé par échec HTTP 400 / écriture silencieusement ignorée.
 function readChoice(value: unknown): string {
   if (!value) return '';
   if (Array.isArray(value)) {
@@ -20,7 +21,7 @@ function readChoice(value: unknown): string {
   return (value as { Value?: string }).Value ?? '';
 }
 
-function choiceFields(field: 'field_2' | 'field_3' | 'field_4', value: string): Record<string, unknown> {
+function choiceFields(field: string, value: string): Record<string, unknown> {
   return {
     [field]: [{ Value: value }],
     [`${field}@odata.type`]: '#Collection(Edm.String)',
@@ -65,10 +66,7 @@ export async function createTicket(draft: TicketDraft): Promise<Ticket> {
     field_6: draft.emailDemandeur,
     field_8: now,
     field_9: draft.dateEcheance ? new Date(draft.dateEcheance).toISOString() : undefined,
-    // Contrairement à Catégorie/Priorité/Statut, ce champ Choix est généré en
-    // texte simple à l'écriture (pas en tableau) — voir le SDK généré. À
-    // ajuster si un test réel montre le contraire (cf. note en tête de fichier).
-    Canaldorigine: draft.canalOrigine,
+    ...choiceFields('Canaldorigine', draft.canalOrigine),
   } as unknown as Omit<Tickets_ProjetFinalWrite, 'ID'>;
   const result = await Tickets_ProjetFinalService.create(payload);
   if (!result.data) {
