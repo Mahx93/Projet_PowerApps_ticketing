@@ -36,8 +36,11 @@ de mise en conformité, suivie ici :
      and field_4/Value eq 'Nouveau' and field_8 le '@{addHours(utcNow(), -1)}'`,
      accesseur `/Value` nécessaire pour les champs Choix), puis Appliquer à
      chacun → email de relance
-4. ⬜ **Tri de la file agent** (priorité/statut/agent assigné) + nouvelle page
-   Dashboard pour le rôle Responsable (volumes, délais, charge d'équipe)
+4. ✅ **Tri de la file agent** (colonnes cliquables Priorité/Statut/Agent
+   assigné, ordre logique pas alphabétique) + nouvelle page Dashboard pour le
+   rôle Responsable (tickets ouverts, critiques en retard, résolus 7 jours,
+   délai moyen, répartition par statut, charge par agent) — code only, à
+   tester sur le PC
 5. ⬜ **Déploiement en production** (à re-vérifier : droits sur un
    environnement supplémentaire, cf. note J4 ci-dessous)
 
