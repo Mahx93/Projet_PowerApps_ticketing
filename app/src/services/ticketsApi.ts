@@ -6,12 +6,15 @@ import type {
 import type { Ticket, TicketDraft } from './ticketFields';
 
 // La connexion SharePoint (connecteur shared_sharepointonline) modélise les
-// colonnes Choix comme des tableaux ({ Value }[]), avec une propriété sœur
-// "<field>@odata.type" = "#Collection(Edm.String)" à l'écriture — quel que
-// soit ce que le SDK généré (Tickets_ProjetFinalModel) déclare pour ce champ
-// (objet simple pour Catégorie/Priorité/Statut, texte simple pour
-// Canaldorigine à sa création) : les deux se sont révélés trompeurs à
-// l'usage, confirmé par échec HTTP 400 / écriture silencieusement ignorée.
+// colonnes Choix différemment selon leur configuration réelle sur la liste,
+// pas selon ce que déclare le SDK généré (Tickets_ProjetFinalModel), qui
+// s'est révélé trompeur pour les deux formes ci-dessous. Vérifié via le
+// schéma OpenAPI du connecteur (.power/schemas/.../*.Schema.json) :
+// - Catégorie/Priorité/Statut : "type": "array" (probablement créées avec
+//   "autoriser plusieurs valeurs" par mégarde) -> tableau [{ Value }] + une
+//   propriété sœur "<field>@odata.type" = "#Collection(Edm.String)".
+// - Canal d'origine : "type": "object" (choix unique, configuration prévue)
+//   -> objet simple { Value } directement, sans tableau ni propriété sœur.
 function readChoice(value: unknown): string {
   if (!value) return '';
   if (Array.isArray(value)) {
@@ -21,10 +24,16 @@ function readChoice(value: unknown): string {
   return (value as { Value?: string }).Value ?? '';
 }
 
-function choiceFields(field: string, value: string): Record<string, unknown> {
+function multiChoiceFields(field: string, value: string): Record<string, unknown> {
   return {
     [field]: [{ Value: value }],
     [`${field}@odata.type`]: '#Collection(Edm.String)',
+  };
+}
+
+function singleChoiceField(field: string, value: string): Record<string, unknown> {
+  return {
+    [field]: { Value: value },
   };
 }
 
@@ -59,20 +68,14 @@ export async function createTicket(draft: TicketDraft): Promise<Ticket> {
   const payload = {
     Title: draft.titre,
     field_1: draft.description,
-    ...choiceFields('field_2', draft.categorie),
-    ...choiceFields('field_3', draft.priorite),
-    ...choiceFields('field_4', 'Nouveau'),
+    ...multiChoiceFields('field_2', draft.categorie),
+    ...multiChoiceFields('field_3', draft.priorite),
+    ...multiChoiceFields('field_4', 'Nouveau'),
     field_5: draft.demandeur,
     field_6: draft.emailDemandeur,
     field_8: now,
     field_9: draft.dateEcheance ? new Date(draft.dateEcheance).toISOString() : undefined,
-    // TODO : écriture de Canaldorigine désactivée pour l'instant — les deux
-    // formats testés (texte simple, tableau) échouent sur cette colonne trop
-    // récente (400 "Item could not be created" en tableau ; ignoré
-    // silencieusement en texte simple), probablement un cache de métadonnées
-    // du connecteur pas encore à jour. Réessayer plus tard avec
-    // choiceFields('Canaldorigine', draft.canalOrigine). Le champ reste
-    // saisissable dans le formulaire (UX prête), juste pas persisté.
+    ...singleChoiceField('Canaldorigine', draft.canalOrigine),
   } as unknown as Omit<Tickets_ProjetFinalWrite, 'ID'>;
   const result = await Tickets_ProjetFinalService.create(payload);
   if (!result.data) {
@@ -93,7 +96,7 @@ type Statut = Ticket['statut'];
 export async function updateTicket(id: string, update: TicketUpdate): Promise<Ticket> {
   const payload: Record<string, unknown> = {};
   if (update.statut) {
-    Object.assign(payload, choiceFields('field_4', update.statut));
+    Object.assign(payload, multiChoiceFields('field_4', update.statut));
   }
   if (update.agentAssigne !== undefined) {
     payload.field_7 = update.agentAssigne;
