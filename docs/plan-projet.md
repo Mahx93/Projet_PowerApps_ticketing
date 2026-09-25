@@ -24,10 +24,18 @@ de mise en conformité, suivie ici :
    clôture, colonne "Canal d'origine" ajoutée, câblée (lecture + écriture) et
    affichée — root cause de l'écriture trouvée et corrigée (voir note
    technique ci-dessous), testé en conditions réelles.
-3. ⬜ **Automatisations manquantes** : accuser réception au demandeur (pas
-   seulement notifier le support), alerter l'équipe seulement si
-   critique/haute (pas systématique), notifier à chaque changement de statut,
-   relancer si un ticket critique dépasse son délai (SLA)
+3. ✅ **Automatisations manquantes**, réparties sur 2 flows Power Automate :
+   - Flow "Notifier création ticket" : accusé de réception systématique au
+     demandeur + alerte conditionnelle au support (Condition sur Priorité =
+     Critique OU Haute, via expression `triggerBody()?['field_3']?[0]?['Value']`)
+   - Flow "Notifier changement de statut" : déclencheur "élément créé ou
+     modifié" + action "Obtenir les modifications (propriétés uniquement)"
+     pour détecter que Statut a changé précisément (pas n'importe quel champ)
+   - Flow "Relancer tickets critiques" : flow programmé (récurrence 30 min),
+     filtre OData côté "Obtenir les éléments" (`field_3/Value eq 'Critique'
+     and field_4/Value eq 'Nouveau' and field_8 le '@{addHours(utcNow(), -1)}'`,
+     accesseur `/Value` nécessaire pour les champs Choix), puis Appliquer à
+     chacun → email de relance
 4. ⬜ **Tri de la file agent** (priorité/statut/agent assigné) + nouvelle page
    Dashboard pour le rôle Responsable (volumes, délais, charge d'équipe)
 5. ⬜ **Déploiement en production** (à re-vérifier : droits sur un
