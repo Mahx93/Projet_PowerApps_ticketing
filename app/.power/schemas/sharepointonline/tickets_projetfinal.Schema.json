@@ -422,6 +422,64 @@
           "x-ms-permission": "read-write",
           "x-ms-sort": "none"
         },
+        "Canaldorigine#Id": {
+          "title": "Canal d'origine Id",
+          "type": "integer",
+          "format": "int64",
+          "x-ms-permission": "read-only",
+          "x-ms-visibility": "internal"
+        },
+        "Canaldorigine": {
+          "title": "Canal d'origine",
+          "type": "object",
+          "x-ms-permission": "read-write",
+          "x-ms-sort": "asc,desc",
+          "x-ms-capabilities": {
+            "x-ms-sp": {
+              "IsChoice": true
+            },
+            "filterFunctions": [
+              "eq"
+            ]
+          },
+          "properties": {
+            "@odata.type": {
+              "title": "@odata.type",
+              "x-ms-visibility": "internal",
+              "type": "string",
+              "x-ms-permission": "read-write"
+            },
+            "Value": {
+              "title": "Value",
+              "type": "string",
+              "x-ms-dynamic-values": {
+                "operationId": "GetEntityValues",
+                "parameters": {
+                  "dataset": {
+                    "parameter": "dataset"
+                  },
+                  "table": {
+                    "parameter": "table"
+                  },
+                  "id": "97a99c52-5701-46cd-994a-c34671a4b718"
+                },
+                "value-path": "Value",
+                "value-title": "Value",
+                "value-collection": "value"
+              }
+            },
+            "Id": {
+              "title": "Id",
+              "type": "integer",
+              "format": "int64",
+              "x-ms-visibility": "internal",
+              "x-ms-permission": "read-only"
+            }
+          },
+          "x-ms-displayFormat": {
+            "titleProperty": "Value"
+          }
+        },
         "OData__ColorTag": {
           "title": "Balise de couleur",
           "type": "string",
@@ -704,7 +762,7 @@
           "x-ms-sort": "none"
         },
         "{IsFolder}": {
-          "title": "Is folder",
+          "title": "Est un dossier",
           "description": "True si l’élément est un dossier, false dans le cas contraire.",
           "type": "boolean",
           "x-ms-permission": "read-only",
@@ -941,6 +999,14 @@
             }
           }
         },
+        "Canaldorigine": {
+          "targetEntity": "Canaldorigine",
+          "referentialConstraints": {
+            "Canaldorigine#Id": {
+              "referencedProperty": "Id"
+            }
+          }
+        },
         "Author": {
           "targetEntity": "Author",
           "referentialConstraints": {
@@ -980,6 +1046,7 @@
           "field_9",
           "field_10",
           "field_11",
+          "Canaldorigine",
           "{Attachments}"
         ],
         "propertiesCompactDisplayOrder": [
@@ -994,7 +1061,8 @@
           "field_8",
           "field_9",
           "field_10",
-          "field_11"
+          "field_11",
+          "Canaldorigine"
         ],
         "propertiesTabularDisplayOrder": [
           "Title",
@@ -1008,7 +1076,8 @@
           "field_8",
           "field_9",
           "field_10",
-          "field_11"
+          "field_11",
+          "Canaldorigine"
         ]
       }
     }
@@ -1035,6 +1104,15 @@
     "field_4": {
       "lookupEndpoint": {
         "path": "/tables/e01a76ec-0c90-47e3-8f26-f6ee673c873e/entities/field_4",
+        "capabilities": {
+          "searchable": true,
+          "requiresSearch": false
+        }
+      }
+    },
+    "Canaldorigine": {
+      "lookupEndpoint": {
+        "path": "/tables/e01a76ec-0c90-47e3-8f26-f6ee673c873e/entities/Canaldorigine",
         "capabilities": {
           "searchable": true,
           "requiresSearch": false

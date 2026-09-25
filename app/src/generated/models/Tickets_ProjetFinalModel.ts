@@ -21,6 +21,12 @@ export interface field_4Value {
   Id: number;
 }
 
+export interface CanaldorigineValue {
+  "@odata.type": string;
+  Value: string;
+  Id: number;
+}
+
 export interface AuthorValue {
   "@odata.type": string;
   Claims: string;
@@ -58,6 +64,7 @@ export interface Tickets_ProjetFinalBase {
   field_9?: string;
   field_10?: string;
   field_11?: string;
+  "Canaldorigine#Id"?: number;
   OData__ColorTag?: string;
   ComplianceAssetId?: string;
   Modified?: string;
@@ -105,6 +112,7 @@ export interface Tickets_ProjetFinalRead extends Tickets_ProjetFinalBase {
   field_2?: field_2Value;
   field_3?: field_3Value;
   field_4?: field_4Value;
+  Canaldorigine?: CanaldorigineValue;
   Author?: AuthorValue;
   Editor?: EditorValue;
 }
@@ -113,6 +121,7 @@ export interface Tickets_ProjetFinalWrite extends Tickets_ProjetFinalBase {
   field_2?: field_2Value;
   field_3?: field_3Value;
   field_4?: field_4Value;
+  Canaldorigine?: string;
   Author?: AuthorValue;
   Editor?: EditorValue;
 }

@@ -116,6 +116,41 @@ export const dataSourcesInfo = {
           }
         }
       },
+      "GetCanaldorigine": {
+        "path": "/{connectionId}/datasets/{dataset}/tables/e01a76ec0c9047e38f26f6ee673c873e/entities/Canaldorigine",
+        "method": "GET",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "table",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responseInfo": {
+          "200": {
+            "type": "array"
+          }
+        }
+      },
       "GetAuthor": {
         "path": "/{connectionId}/datasets/{dataset}/tables/e01a76ec0c9047e38f26f6ee673c873e/entities/Author",
         "method": "GET",
