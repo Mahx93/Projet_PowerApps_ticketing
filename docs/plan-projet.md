@@ -114,9 +114,11 @@ démo. Voir note technique plus bas.
   (Sécurité et accès), exploitée pour la restriction ci-dessus. Agent
   **publié sur Teams + Microsoft 365** (scope "Microsoft Teams uniquement",
   pas M365 Copilot général — cohérent avec le périmètre du cahier des
-  charges et l'exigence d'accès restreint). ⬜ Reste : point RGPD explicite
-  à documenter (rétention, ce que l'agent ne doit pas stocker), groupes de
-  sécurité Entra si le temps le permet.
+  charges et l'exigence d'accès restreint). ✅ Point RGPD documenté
+  (`docs/rgpd.md` : données traitées, minimisation, ce que l'agent ne doit
+  pas stocker/demander, durées de conservation, sécurité déjà en place) —
+  consignes correspondantes ajoutées à l'agent. ⬜ Reste (optionnel) :
+  groupes de sécurité Entra si le temps le permet.
 
 ## Phase 3 — Rendu
 - ⬜ **Une seule vidéo de 5 minutes** (changement : avant c'était 2 vidéos séparées) — présentation de la solution + démonstration en fonctionnement. Pas de dossier écrit, pas de soutenance.
