@@ -16,13 +16,15 @@ function App() {
     getContext()
       .then((ctx) => {
         setAgentName(ctx.user.fullName ?? '');
+        console.log('userPrincipalName utilisé pour la vérification du groupe :', ctx.user.userPrincipalName);
         return isResponsable(ctx.user.userPrincipalName ?? '');
       })
       .then(setShowDashboard)
-      .catch(() => {
+      .catch((err) => {
         // Contexte utilisateur ou vérification de groupe indisponible (ex:
         // exécution locale hors Teams) : pas bloquant, le Dashboard reste
         // masqué par défaut.
+        console.error('Vérification du groupe Responsables échouée :', err);
       });
   }, []);
 
