@@ -1,4 +1,4 @@
-import type { Priorite, Statut } from '../lib/ticketFields';
+import type { Priorite, Statut } from '../services/ticketFields';
 
 const PRIORITY_CLASS: Record<string, string> = {
   Critique: 'badge badge-critique',

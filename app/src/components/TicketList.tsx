@@ -1,4 +1,4 @@
-import type { Ticket } from '../lib/ticketFields';
+import type { Ticket } from '../services/ticketFields';
 import { PriorityBadge, StatusBadge } from './Badges';
 
 function formatDate(iso: string): string {

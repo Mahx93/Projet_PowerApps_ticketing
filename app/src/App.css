@@ -21,6 +21,12 @@
   margin-top: 4px;
 }
 
+.page-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
 .view-tabs {
   display: flex;
   gap: 4px;

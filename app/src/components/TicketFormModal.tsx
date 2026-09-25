@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { CATEGORIES, PRIORITIES } from '../lib/ticketFields';
-import type { TicketDraft } from '../lib/ticketFields';
+import { CATEGORIES, PRIORITIES } from '../services/ticketFields';
+import type { TicketDraft } from '../services/ticketFields';
 
 export function TicketFormModal({
   defaultDemandeur,
