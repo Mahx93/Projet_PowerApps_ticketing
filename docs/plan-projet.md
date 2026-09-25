@@ -65,6 +65,7 @@ DEV → import dans prod-rse → reconnecter la connexion SharePoint).
   - ⬜ Migration dev → test/prod : un seul environnement disponible pour l'instant (`DevZone Batch - 18&19`) ; à vérifier si Maxime a les droits de créer un environnement supplémentaire (admin.powerplatform.microsoft.com → Environnements → Nouveau). Le nouveau cahier demande explicitement un déploiement **en production** en séance 8 (contrairement à l'ancienne version).
 
 ## Notes techniques importantes
+- **Copilot Studio — crédits épuisés, définitif** : le panneau de test de l'agent renvoie `Error code: EnforcementUsageCredits` ("This environment is out of credits"). Confirmé non résolvable (pas de recharge prévue pour ce tenant de formation). L'agent est construit et documenté mais son comportement conversationnel ne peut pas être vérifié en conditions réelles — à assumer clairement dans la vidéo plutôt que de le cacher.
 - **`pac code` (Code Apps) ne fonctionne pas depuis l'environnement cloud Claude** : l'API `environment.api.powerplatform.com` semble bloquer les IP de datacenter. Toutes les commandes `pac code` (init, add-data-source, run, push) doivent s'exécuter sur le PC perso de Maxime (via VS Code + extension Power Platform Tools). Le reste (auth, env, solution, docs, code applicatif) se fait depuis l'interface Claude.
 - **Microsoft Lists ≠ SharePoint site** : une liste créée depuis lists.microsoft.com sans choisir explicitement le site cible reste orpheline (n'apparaît pas dans le site ni dans les connecteurs). Toujours créer les listes depuis "Contenu du site" du site SharePoint cible.
 - **`pac code add-data-source --table`** attend l'ID interne de la liste (GUID, obtenu via `pac code list-tables`), pas son nom affiché.
@@ -75,9 +76,33 @@ DEV → import dans prod-rse → reconnecter la connexion SharePoint).
 - **Toutes les colonnes Choix n'ont pas le même format d'écriture — à vérifier via le schéma, pas en devinant** : Catégorie/Priorité/Statut sont déclarées `"type": "array"` dans le schéma OpenAPI du connecteur (`.power/schemas/sharepointonline/*.Schema.json`) — probablement créées avec "autoriser plusieurs valeurs" par mégarde — et attendent `[{Value}]` + une propriété sœur `"<field>@odata.type": "#Collection(Edm.String)"`. Canal d'origine (créée en choix unique, comme prévu) est déclarée `"type": "object"` et attend un objet simple `{Value}`, sans tableau ni propriété sœur. Utiliser le mauvais format donne soit un échec silencieux (objet/texte envoyé à un champ tableau : ignoré, item quand même créé) soit un 400 "Item could not be created" (tableau envoyé à un champ objet : requête entière rejetée). Toujours vérifier le `"type"` déclaré dans le schéma JSON avant d'écrire un nouveau champ Choix plutôt que de supposer le format. Voir `multiChoiceFields` / `singleChoiceField` dans `src/services/ticketsApi.ts`.
 
 ## Phase 2 — Copilot Studio
-- ⬜ J5 Création de l'agent : page blanche + compétences (FAQ en RAG), génératif direct désactivé
-- ⬜ J6 Actions & Power Automate : création de ticket + consultation de statut via flow (par ID, restreint aux tickets du demandeur), notification responsable support
-- ⬜ J7 Sécurité, RGPD & Démo : groupes de sécurité, accès restreint, point RGPD, intégration Teams
+
+⚠️ **Blocage tenant : plus de crédits Copilot Studio, non résolvable** (erreur
+`EnforcementUsageCredits` dans le panneau de test). L'agent ne peut pas être
+testé en conversation dans ce tenant de formation. On continue à le
+**construire correctement** (config, outils, consignes, sécurité) sans
+pouvoir vérifier le comportement runtime. Pour la vidéo : montrer la
+configuration + expliquer honnêtement la limitation plutôt qu'une fausse
+démo. Voir note technique plus bas.
+
+- 🔶 J5 Création de l'agent : agent "HelpDesk Nova Solutions" créé à partir de
+  zéro (type Assistant), solution Maxime_G_Batch18. FAQ (`copilot-studio/faq.md`,
+  déposée en `.txt` sur SharePoint) ajoutée comme source de Connaissance. Pas
+  de case "connaissances générales de l'IA" dans cette version de l'UI — le
+  cadrage se fait via les Consignes (instructions explicites : répondre
+  uniquement depuis la FAQ, créer un ticket sinon, rester dans le périmètre
+  IT/RH). ⬜ Langue principale à corriger (English → Français, dans
+  Informations sur l'assistant).
+- 🔶 J6 Actions : outil "Créer un élément" (connecteur SharePoint) configuré —
+  site et liste en Personnalisé (valeurs fixes), champs contenu en "Remplir
+  avec l'IA", Statut et Canal d'origine en Personnalisé (valeurs fixes
+  Nouveau / Teams). ⬜ Outil de consultation de statut par ID (restreint aux
+  tickets de l'utilisateur connecté) à faire.
+- ⬜ J7 Sécurité, RGPD & Démo : Authentification déjà réglée sur "S'authentifier
+  avec Microsoft" (Sécurité et accès) — exploitable pour restreindre l'accès
+  aux tickets de l'utilisateur connecté. Reste : groupes de sécurité, point
+  RGPD, tentative de publication Teams (untestable en pratique vu le blocage
+  crédits, mais la configuration peut être faite).
 
 ## Phase 3 — Rendu
 - ⬜ **Une seule vidéo de 5 minutes** (changement : avant c'était 2 vidéos séparées) — présentation de la solution + démonstration en fonctionnement. Pas de dossier écrit, pas de soutenance.
