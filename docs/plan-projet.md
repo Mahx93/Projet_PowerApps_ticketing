@@ -85,24 +85,33 @@ pouvoir vérifier le comportement runtime. Pour la vidéo : montrer la
 configuration + expliquer honnêtement la limitation plutôt qu'une fausse
 démo. Voir note technique plus bas.
 
-- 🔶 J5 Création de l'agent : agent "HelpDesk Nova Solutions" créé à partir de
+- ✅ J5 Création de l'agent : agent "HelpDesk Nova Solutions" créé à partir de
   zéro (type Assistant), solution Maxime_G_Batch18. FAQ (`copilot-studio/faq.md`,
-  déposée en `.txt` sur SharePoint) ajoutée comme source de Connaissance. Pas
-  de case "connaissances générales de l'IA" dans cette version de l'UI — le
-  cadrage se fait via les Consignes (instructions explicites : répondre
-  uniquement depuis la FAQ, créer un ticket sinon, rester dans le périmètre
-  IT/RH). ⬜ Langue principale à corriger (English → Français, dans
-  Informations sur l'assistant).
-- 🔶 J6 Actions : outil "Créer un élément" (connecteur SharePoint) configuré —
-  site et liste en Personnalisé (valeurs fixes), champs contenu en "Remplir
-  avec l'IA", Statut et Canal d'origine en Personnalisé (valeurs fixes
-  Nouveau / Teams). ⬜ Outil de consultation de statut par ID (restreint aux
-  tickets de l'utilisateur connecté) à faire.
-- ⬜ J7 Sécurité, RGPD & Démo : Authentification déjà réglée sur "S'authentifier
-  avec Microsoft" (Sécurité et accès) — exploitable pour restreindre l'accès
-  aux tickets de l'utilisateur connecté. Reste : groupes de sécurité, point
-  RGPD, tentative de publication Teams (untestable en pratique vu le blocage
-  crédits, mais la configuration peut être faite).
+  déposée en `.txt` sur SharePoint) ajoutée comme source de Connaissance —
+  la source générique "Effectuer une recherche sur tous les sites web"
+  (activée par défaut) a été retirée pour respecter le "rien n'est ouvert
+  par défaut" du cahier des charges. Pas de case "connaissances générales de
+  l'IA" dans cette version de l'UI — le cadrage se fait via les Consignes
+  (répondre uniquement depuis la FAQ, créer un ticket sinon, rester dans le
+  périmètre IT/RH, toujours répondre en français). Langue principale de
+  l'agent verrouillée sur English dès la création (non modifiable dans
+  l'UI) — contourné en forçant le français via les consignes.
+- ✅ J6 Actions : 2 outils SharePoint configurés — "Créer un élément" (site et
+  liste en Personnalisé/valeurs fixes, champs contenu en "Remplir avec
+  l'IA", Statut et Canal d'origine en Personnalisé/valeurs fixes Nouveau et
+  Teams) et "Obtenir les éléments" (filtre `ID eq {ID}`, paramètre d'entrée
+  généré automatiquement). La restriction "un demandeur ne voit que ses
+  propres tickets" est portée par les Consignes (vérification Email
+  demandeur = utilisateur connecté) plutôt que par le filtre, faute de
+  pouvoir vérifier empiriquement la syntaxe supportée pour une variable
+  système dans un filtre d'outil (crédits épuisés, pas de test possible).
+- ✅ J7 (partiel) : Authentification réglée sur "S'authentifier avec Microsoft"
+  (Sécurité et accès), exploitée pour la restriction ci-dessus. Agent
+  **publié sur Teams + Microsoft 365** (scope "Microsoft Teams uniquement",
+  pas M365 Copilot général — cohérent avec le périmètre du cahier des
+  charges et l'exigence d'accès restreint). ⬜ Reste : point RGPD explicite
+  à documenter (rétention, ce que l'agent ne doit pas stocker), groupes de
+  sécurité Entra si le temps le permet.
 
 ## Phase 3 — Rendu
 - ⬜ **Une seule vidéo de 5 minutes** (changement : avant c'était 2 vidéos séparées) — présentation de la solution + démonstration en fonctionnement. Pas de dossier écrit, pas de soutenance.
