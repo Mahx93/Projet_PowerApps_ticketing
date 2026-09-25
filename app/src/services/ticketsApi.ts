@@ -38,10 +38,7 @@ function fromRecord(record: Tickets_ProjetFinalRead): Ticket {
     demandeur: record.field_5 ?? '',
     emailDemandeur: record.field_6 ?? '',
     agentAssigne: record.field_7 ?? '',
-    // TODO : colonne "Canal d'origine" pas encore créée dans SharePoint.
-    // Une fois ajoutée (cf. sharepoint/schema-tickets.md) et rechargée via
-    // `pac code add-data-source`, mapper ici le nouveau field_N généré.
-    canalOrigine: '',
+    canalOrigine: readChoice(record.Canaldorigine) as Ticket['canalOrigine'],
     dateCreation: record.field_8 ?? '',
     dateEcheance: record.field_9 ?? '',
     dateResolution: record.field_10 ?? '',
@@ -68,7 +65,10 @@ export async function createTicket(draft: TicketDraft): Promise<Ticket> {
     field_6: draft.emailDemandeur,
     field_8: now,
     field_9: draft.dateEcheance ? new Date(draft.dateEcheance).toISOString() : undefined,
-    // draft.canalOrigine pas encore envoyé : colonne SharePoint à créer (cf. TODO fromRecord).
+    // Contrairement à Catégorie/Priorité/Statut, ce champ Choix est généré en
+    // texte simple à l'écriture (pas en tableau) — voir le SDK généré. À
+    // ajuster si un test réel montre le contraire (cf. note en tête de fichier).
+    Canaldorigine: draft.canalOrigine,
   } as unknown as Omit<Tickets_ProjetFinalWrite, 'ID'>;
   const result = await Tickets_ProjetFinalService.create(payload);
   if (!result.data) {

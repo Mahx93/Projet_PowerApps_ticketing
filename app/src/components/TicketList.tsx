@@ -29,6 +29,7 @@ export function TicketList({
           <th>Statut</th>
           <th>Demandeur</th>
           <th>Agent assigné</th>
+          <th>Canal</th>
           <th>Créé le</th>
           <th>Échéance</th>
         </tr>
@@ -46,6 +47,7 @@ export function TicketList({
             </td>
             <td>{ticket.demandeur}</td>
             <td>{ticket.agentAssigne || '—'}</td>
+            <td>{ticket.canalOrigine || '—'}</td>
             <td>{formatDate(ticket.dateCreation)}</td>
             <td>{formatDate(ticket.dateEcheance)}</td>
           </tr>
