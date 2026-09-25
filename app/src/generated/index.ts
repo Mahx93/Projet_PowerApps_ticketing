@@ -5,7 +5,9 @@
 
 // Models
 export * as CommonModels from './models/CommonModels';
+export * as Office365GroupsModel from './models/Office365GroupsModel';
 export * as Tickets_ProjetFinalModel from './models/Tickets_ProjetFinalModel';
 
 // Services
+export * from './services/Office365GroupsService';
 export * from './services/Tickets_ProjetFinalService';

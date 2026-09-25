@@ -25,6 +25,14 @@
           }
         }
       }
+    },
+    "e55552be-09ed-4026-914d-23e2023ec1a2": {
+      "id": "/providers/Microsoft.PowerApps/apis/shared_office365groups",
+      "displayName": "Office 365 Groups",
+      "dataSources": [
+        "office365groups"
+      ],
+      "dataSets": {}
     }
   },
   "databaseReferences": {}
