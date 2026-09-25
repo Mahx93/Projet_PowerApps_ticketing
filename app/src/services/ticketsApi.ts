@@ -66,7 +66,13 @@ export async function createTicket(draft: TicketDraft): Promise<Ticket> {
     field_6: draft.emailDemandeur,
     field_8: now,
     field_9: draft.dateEcheance ? new Date(draft.dateEcheance).toISOString() : undefined,
-    ...choiceFields('Canaldorigine', draft.canalOrigine),
+    // TODO : écriture de Canaldorigine désactivée pour l'instant — les deux
+    // formats testés (texte simple, tableau) échouent sur cette colonne trop
+    // récente (400 "Item could not be created" en tableau ; ignoré
+    // silencieusement en texte simple), probablement un cache de métadonnées
+    // du connecteur pas encore à jour. Réessayer plus tard avec
+    // choiceFields('Canaldorigine', draft.canalOrigine). Le champ reste
+    // saisissable dans le formulaire (UX prête), juste pas persisté.
   } as unknown as Omit<Tickets_ProjetFinalWrite, 'ID'>;
   const result = await Tickets_ProjetFinalService.create(payload);
   if (!result.data) {
