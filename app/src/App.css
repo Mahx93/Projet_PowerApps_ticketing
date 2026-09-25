@@ -251,3 +251,76 @@
 .detail-meta dd {
   margin: 0;
 }
+
+.ticket-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.ticket-table th.sortable:hover {
+  color: var(--text);
+}
+
+.section-title {
+  font-size: 16px;
+  margin: 28px 0 12px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.stat-tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-tile-alert {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-tile-alert .stat-value {
+  color: #b91c1c;
+}
+
+.stat-label {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.status-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.status-breakdown-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.status-breakdown-count {
+  font-weight: 600;
+  font-size: 13px;
+}
