@@ -117,8 +117,17 @@ démo. Voir note technique plus bas.
   charges et l'exigence d'accès restreint). ✅ Point RGPD documenté
   (`docs/rgpd.md` : données traitées, minimisation, ce que l'agent ne doit
   pas stocker/demander, durées de conservation, sécurité déjà en place) —
-  consignes correspondantes ajoutées à l'agent. ⬜ Reste (optionnel) :
-  groupes de sécurité Entra si le temps le permet.
+  consignes correspondantes ajoutées à l'agent. ✅ Groupes de sécurité Entra
+  créés (`HelpDesk - Collaborateurs`, `HelpDesk - Responsables`) — la
+  restriction Teams par groupe n'est pas exposée dans cette version de
+  Copilot Studio (Sécurité et accès ne gère que l'authentification et le
+  canal web, pas d'audience par groupe ; ça relèverait du Centre
+  d'administration Teams, hors périmètre vu le blocage crédits). En
+  revanche le Dashboard Responsable de la Code App est bien restreint au
+  groupe `HelpDesk - Responsables` via le connecteur Office 365 Groups
+  (`src/services/entraGroups.ts`, vérification `ListGroupMembers` sur le
+  `userPrincipalName` du contexte utilisateur) — code only, à tester sur
+  le PC.
 
 ## Phase 3 — Rendu
 - ⬜ **Une seule vidéo de 5 minutes** (changement : avant c'était 2 vidéos séparées) — présentation de la solution + démonstration en fonctionnement. Pas de dossier écrit, pas de soutenance.
