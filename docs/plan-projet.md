@@ -18,10 +18,12 @@ de mise en conformité, suivie ici :
 1. ✅ **Réorg du code** en `components/pages/services`, Code App recentrée sur
    le périmètre "espace agent support" uniquement (le suivi demandeur passe
    par l'agent Copilot Studio, pas par la Code App)
-2. ⬜ **Statuts et champs manquants** : ajouter le statut "En attente
-   demandeur" (Nouveau → En cours → En attente demandeur → Résolu → Clôturé),
-   les champs "canal d'origine" et "agent assigné" (formaliser), rendre le
-   commentaire de résolution obligatoire à la clôture
+2. ✅ **Statuts et champs manquants** : nouveau cycle de statuts (Nouveau → En
+   cours → En attente demandeur → Résolu → Clôturé), agent assigné formalisé
+   (renommé depuis gestionnaire), commentaire de résolution obligatoire à la
+   clôture, colonne "Canal d'origine" ajoutée et affichée. ⚠️ Écriture de
+   Canal d'origine désactivée temporairement (voir note technique ci-dessous)
+   — tout le reste fonctionne et est testé en conditions réelles.
 3. ⬜ **Automatisations manquantes** : accuser réception au demandeur (pas
    seulement notifier le support), alerter l'équipe seulement si
    critique/haute (pas systématique), notifier à chaque changement de statut,
@@ -52,6 +54,7 @@ de mise en conformité, suivie ici :
 - **Connecteur "Mail" (`shared_sendmail`) vs "Office 365 Outlook"** : dans le sélecteur d'actions Power Automate, les deux proposent une action "Envoyer un e-mail" au nom quasi identique. Le connecteur générique "Mail" est actuellement bridé par Microsoft pour les nouveaux tenants (HTTP 401 "restricted for new tenants") — toujours choisir explicitement **Office 365 Outlook**.
 - **Licence Power Apps manquante sur ce tenant de formation** : lancer l'app déployée via le lecteur officiel (make.powerapps.com / lien "play" de production) déclenche une demande d'essai Power Apps ("plan insuffisant"). Le mode local (`pac code run` + URL "play" avec `_localAppUrl`) n'est pas soumis à cette contrainte et fonctionne normalement — c'est ce mode qui sert de démo fonctionnelle pour la vidéo tant que la licence n'est pas résolue côté tenant. À re-vérifier vu l'exigence de prod du nouveau cahier.
 - **Structure du code (25/09)** : réorganisé en `components/` (Badges, TicketList, TicketFormModal, TicketDetailModal), `pages/` (AgentQueuePage), `services/` (ticketFields, ticketsApi — ex-`lib/`). La Code App ne gère plus que le côté agent support ; la vue "Mes tickets" (demandeur) a été retirée, ce suivi passera par l'agent Copilot Studio.
+- **Colonne SharePoint ajoutée récemment = risque d'échec en écriture** : la colonne "Canal d'origine" (interne `Canaldorigine`) est lisible et sélectionnable en saisie manuelle SharePoint, mais toute écriture via le connecteur `shared_sharepointonline` échoue (texte simple : ignoré silencieusement, item créé sans la valeur ; tableau `[{Value}]` comme les autres champs Choix : 400 "Item could not be created", item pas créé du tout). Testé après nouvelle connexion, redémarrage de `pac code run`, et attente — sans succès. Cache de métadonnées du connecteur probablement pas encore à jour pour cette colonne. Écriture désactivée dans `ticketsApi.ts` (TODO en commentaire) ; à retenter dans une prochaine session.
 
 ## Phase 2 — Copilot Studio
 - ⬜ J5 Création de l'agent : page blanche + compétences (FAQ en RAG), génératif direct désactivé
