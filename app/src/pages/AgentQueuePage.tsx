@@ -6,6 +6,10 @@ import { TicketList } from '../components/TicketList';
 import { TicketFormModal } from '../components/TicketFormModal';
 import { TicketDetailModal } from '../components/TicketDetailModal';
 
+function loadErrorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : 'Impossible de charger les tickets.';
+}
+
 // Écran "espace agent support" : file complète des tickets, prise en charge,
 // clôture. Le suivi côté demandeur (portail collaborateur) passe par l'agent
 // Copilot Studio dans Teams, pas par cet écran.
@@ -20,17 +24,19 @@ export function AgentQueuePage({ agentName }: { agentName: string }) {
     setLoading(true);
     setLoadError('');
     try {
-      const data = await listTickets();
-      setTickets(data);
+      setTickets(await listTickets());
     } catch (err) {
-      setLoadError(err instanceof Error ? err.message : 'Impossible de charger les tickets.');
+      setLoadError(loadErrorMessage(err));
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    refreshTickets();
+    listTickets()
+      .then(setTickets)
+      .catch((err) => setLoadError(loadErrorMessage(err)))
+      .finally(() => setLoading(false));
   }, []);
 
   async function handleCreate(draft: TicketDraft) {
