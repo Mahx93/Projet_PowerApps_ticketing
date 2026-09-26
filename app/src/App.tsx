@@ -16,7 +16,6 @@ function App() {
     getContext()
       .then((ctx) => {
         setAgentName(ctx.user.fullName ?? '');
-        console.log('userPrincipalName utilisé pour la vérification du groupe :', ctx.user.userPrincipalName);
         return isResponsable(ctx.user.userPrincipalName ?? '');
       })
       .then(setShowDashboard)
