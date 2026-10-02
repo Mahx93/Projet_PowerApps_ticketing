@@ -13,8 +13,7 @@ les actions à l'écran en liste.
 - [ ] Flow « Relancer tickets critiques » réactivé.
 - [ ] Une dizaine de tickets de test variés (priorités, statuts, agents,
       canaux) pour que le tri et le Dashboard aient du contenu.
-- [ ] Onglets ouverts à l'avance : la Code App, la liste SharePoint,
-      Outlook (boîte du demandeur de test), Power Automate (historique
+- [ ] Onglets ouverts à l'avance : la Code App, Outlook (boîte du demandeur de test), Power Automate (historique
       d'exécution), Copilot Studio (agent), la solution dans prod-rse.
 - [ ] Notifications Windows/Teams coupées.
 
@@ -83,25 +82,29 @@ statut est notifié. Enfin, un flow programmé relance l'équipe quand un ticket
 critique n'est toujours pas pris en charge après une heure, conformément au
 délai du cahier des charges.*
 
-## 3:40 – 4:25 · L'agent Copilot Studio (simulation)
+## 3:40 – 4:25 · L'agent Copilot Studio (configuration)
 
-- Copilot Studio : la source de connaissance (FAQ SharePoint), puis les
-  consignes (répondre uniquement depuis la FAQ, en français, rester dans le
-  périmètre IT/RH).
+- Ouvrir directement l'agent dans Copilot Studio : la page de présentation
+  montre d'un coup les Consignes, les Canaux, les Outils et la Connaissance.
+- Connaissance : la FAQ SharePoint comme seule source (la recherche web par
+  défaut a été retirée).
+- Consignes : répondre uniquement depuis la FAQ, en français, rester dans le
+  périmètre IT/RH, créer un ticket sinon.
 - L'outil « Créer un élément » : Statut = Nouveau et Canal = Teams en
   valeurs fixes, les autres champs remplis par l'IA.
-- L'outil « Obtenir les éléments » (filtre par ID) et l'authentification
-  Microsoft.
-- SharePoint : créer à la main un ticket avec Canal d'origine = **Teams**,
-  puis le montrer dans la Code App avec le canal « Teams ».
+- L'outil « Obtenir les éléments » : filtre par ID pour le suivi d'un ticket.
+- Canaux : publication dans Teams. Paramètres, Sécurité et accès :
+  authentification Microsoft.
 
 *L'agent répond aux questions courantes à partir de la FAQ, crée un ticket
 quand il ne trouve pas de réponse, et permet de suivre ses propres tickets
 avec leur identifiant. L'environnement de formation n'a plus de crédits
 Copilot Studio, et ce blocage touche tous les canaux, Teams compris. Plutôt
-qu'une fausse démo, je montre sa configuration, puis je reproduis à la main
-l'action de son outil de création : le ticket arrive avec le canal Teams, et
-toute la chaîne de notifications se déclenche comme pour les autres.*
+qu'une fausse démo, je montre directement sa configuration. Sa seule source
+de connaissance est la FAQ, ses consignes le cantonnent au périmètre IT et
+RH, et son outil de création enregistre le ticket avec le statut Nouveau et
+le canal Teams, ce qui déclenche les mêmes notifications que pour les autres
+tickets.*
 
 ## 4:25 – 4:50 · Sécurité et mise en production
 
